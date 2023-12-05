@@ -62,12 +62,13 @@ class PriceListImport implements ToModel, WithStartRow, WithValidation
 
         $price_list = PriceList::firstOrNew(['number' => $row[0]]);
         $price     = $row[4] ?? 0;
+        $price_gbp = $price * $this->conversion_rate_to_gbp;
 
         $price_list->fill([
             'name'        => $row[1] ?? null,
             'bottle_size' => $row[3] ?? null,
-            'price'       => $price,
-            'price_gbp'   => $price * $this->conversion_rate_to_gbp,
+            'price'       => number_format($price, 2, '.', ''),
+            'price_gbp'   => number_format($price_gbp, 2, '.', ''),
         ]);
 
         return $price_list;
