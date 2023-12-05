@@ -83,16 +83,39 @@ class PriceListController extends Controller
         $id = $request->id;
         $action = $request->action;
 
-        $price_list = PriceList::findOrFail($id);
+        try {
+            $price_list = PriceList::findOrFail($id);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Invalid ID.']);
+        }
 
         if ($action == 'increment') {
             $price_list->increment('order_amount');
-        } elseif ($action == 'decrement' && $price_list->order_amount > 0) {
-            $price_list->decrement('order_amount');
+        } elseif ($action == 'clear') {
+            $price_list->order_amount = 0;
         }
 
         $price_list->save();
 
         return response()->json(['success' => true, 'value' => $price_list->order_amount]);
+    }
+
+    /**
+     * Empty the price list table.
+     *
+     * @param Request $request The request object.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function emptyTable(Request $request): \Illuminate\Http\JsonResponse
+    {
+
+        if ($request->_token != csrf_token()) {
+            return response()->json(['success' => false, 'message' => 'Invalid token.']);
+        }
+
+        PriceList::truncate();
+
+        return response()->json(['success' => true]);
     }
 }

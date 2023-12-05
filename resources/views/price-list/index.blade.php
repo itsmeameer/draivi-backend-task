@@ -22,6 +22,13 @@
         padding: 20px;
     }
 
+    .lg-button {
+        padding: 15px 30px;
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
     /* Styling for DataTables search box */
     .dataTables_wrapper .dataTables_filter input {
         margin-left: 0.5em;
@@ -96,7 +103,13 @@
 <body>
 
     <div class="wrapper">
-        <table id="priceListTable" class="display">
+
+        <div style="text-align: center; margin-bottom: 20px;">
+            <button id="listTableButton" class="lg-button">List</button>
+            <button id="emptyTableButton" class="lg-button">Empty</button>
+        </div>
+
+        <table id="priceListTable" class="display" style="display: none;">
             <thead>
                 <tr>
                     <th>Number</th>
@@ -117,36 +130,67 @@
 
     <script>
         $(document).ready(function() {
-            $('#priceListTable').DataTable({
-                "processing": true,
-                "serverSide": true,
-                "pageLength": 25,
-                "ajax": "{{ route('price-list.data') }}",
-                "columns": [
-                    { "data": "number" },
-                    { "data": "name" },
-                    { "data": "bottle_size" },
-                    { "data": "price", render: function (data, type, row) {
-                        return "{{ env('PRICE_LIST_CURRENCY_FROM_SYMBOL') }}" + data;
-                    } },
-                    { "data": "price_gbp", render: function (data, type, row) {
-                        return "{{ env('PRICE_LIST_CURRENCY_to_SYMBOL') }}" + data;
-                    }  },
-                    { "data": "order_amount", "render": function(data, type, row) {
-                        return `
-                            <button class="btn btn-sm btn-secondary decrement" data-id="${row.id}">-</button>
-                            <span class="order-amount" data-id="${row.id}">${data}</span>
-                            <button class="btn btn-sm btn-primary increment" data-id="${row.id}">+</button>
-                        `;
-                    } },
-                    { "data": "updated_at", render: function (data, type, row) {
-                        return new Date(data).toLocaleDateString();
-                    } }
-                ],
-                "language": {
-                    "emptyTable": "No data found. Please run the fetch command first.",
+
+            $('#emptyTableButton').click(function() {
+                if (confirm('Are you sure you want to empty the table?')) {
+                    $.ajax({
+                        url: "{{ route('price-list.empty-table') }}",
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                alert('Table emptied successfully.');
+                                $('#priceListTable').DataTable().ajax.reload();
+                                $('#emptyTableButton').prop('disabled', true);
+                            } else {
+                                alert(response.message);
+                            }
+                        }
+                    });
                 }
             });
+
+            let dataTable = false;
+
+            $('#listTableButton').click(function() {
+                $(this).prop('disabled', true);
+                
+                $('#priceListTable').show();
+
+                $('#priceListTable').DataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "pageLength": 25,
+                    "ajax": "{{ route('price-list.data') }}",
+                    "columns": [
+                        { "data": "number" },
+                        { "data": "name" },
+                        { "data": "bottle_size" },
+                        { "data": "price", render: function (data, type, row) {
+                            return "{{ env('PRICE_LIST_CURRENCY_FROM_SYMBOL') }}" + data;
+                        } },
+                        { "data": "price_gbp", render: function (data, type, row) {
+                            return "{{ env('PRICE_LIST_CURRENCY_to_SYMBOL') }}" + data;
+                        }  },
+                        { "data": "order_amount", "render": function(data, type, row) {
+                            return `
+                                <button class="btn btn-sm clear" data-id="${row.id}">Clear</button>
+                                <span class="order-amount" data-id="${row.id}">${data}</span>
+                                <button class="btn btn-sm increment" data-id="${row.id}">Add</button>
+                            `;
+                        } },
+                        { "data": "updated_at", render: function (data, type, row) {
+                            return new Date(data).toLocaleDateString();
+                        } }
+                    ],
+                    "language": {
+                        "emptyTable": "Table is empty. Please run the fetch command first.",
+                    }
+                });
+            });
+
 
             // Event listener for the increment button.
             $('#priceListTable').on('click', '.increment', function() {
@@ -154,10 +198,10 @@
                 updateOrderAmount(id, 'increment');
             });
 
-            // Event listener for the decrement button.
-            $('#priceListTable').on('click', '.decrement', function() {
+            // Event listener for the clear button.
+            $('#priceListTable').on('click', '.clear', function() {
                 var id = $(this).data('id');
-                updateOrderAmount(id, 'decrement');
+                updateOrderAmount(id, 'clear');
             });
 
             function updateOrderAmount(id, action) {
