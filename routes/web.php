@@ -21,3 +21,7 @@ Route::group(['prefix' => 'price-list'], function () {
     Route::post('/update-order-amount', [PriceListController::class, 'updateOrderAmount'])->name('price-list.update-order-amount');
     Route::post('/empty-table', [PriceListController::class, 'emptyTable'])->name('price-list.empty-table');
 });
+
+Route::fallback(function () {
+    return response('Not found.', 404);
+});
