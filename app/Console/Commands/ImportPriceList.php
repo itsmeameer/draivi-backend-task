@@ -70,9 +70,6 @@ class ImportPriceList extends Command
 
         $this->info('File downloaded successfully, validating...');
 
-        // TODO: remove this
-        $price_list_path = storage_path('files/backup.xlsx');
-
         if (! $this->isExcelFile($price_list_path)) {
             $this->error('The file is not an Excel file.');
             return;

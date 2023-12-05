@@ -132,7 +132,13 @@
                     { "data": "price_gbp", render: function (data, type, row) {
                         return "{{ env('PRICE_LIST_CURRENCY_to_SYMBOL') }}" + data;
                     }  },
-                    { "data": "order_amount" },
+                    { "data": "order_amount", "render": function(data, type, row) {
+                        return `
+                            <button class="btn btn-sm btn-secondary decrement" data-id="${row.id}">-</button>
+                            <span class="order-amount" data-id="${row.id}">${data}</span>
+                            <button class="btn btn-sm btn-primary increment" data-id="${row.id}">+</button>
+                        `;
+                    } },
                     { "data": "updated_at", render: function (data, type, row) {
                         return new Date(data).toLocaleDateString();
                     } }
@@ -141,6 +147,38 @@
                     "emptyTable": "No data found. Please run the fetch command first.",
                 }
             });
+
+            // Event listener for the increment button.
+            $('#priceListTable').on('click', '.increment', function() {
+                var id = $(this).data('id');
+                updateOrderAmount(id, 'increment');
+            });
+
+            // Event listener for the decrement button.
+            $('#priceListTable').on('click', '.decrement', function() {
+                var id = $(this).data('id');
+                updateOrderAmount(id, 'decrement');
+            });
+
+            function updateOrderAmount(id, action) {
+                $.ajax({
+                    url: "{{ route('price-list.update-order-amount') }}",
+                    type: 'POST',
+                    data: {
+                        id: id,
+                        action: action,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            const orderAmount = $('.order-amount[data-id="' + id + '"]');
+                            orderAmount.text(response.value);
+                        } else {
+                            alert(response.message);
+                        }
+                    }
+                });
+            }
         });
     </script>
     

@@ -15,4 +15,8 @@ use App\Http\Controllers\PriceListController;
 */
 
 Route::get('/', [PriceListController::class, 'index'])->name('price-list.index');
-Route::get('/price-list/data', [PriceListController::class, 'data'])->name('price-list.data');
+
+Route::group(['prefix' => 'price-list'], function () {
+    Route::get('/data', [PriceListController::class, 'data'])->name('price-list.data');
+    Route::post('/update-order-amount', [PriceListController::class, 'updateOrderAmount'])->name('price-list.update-order-amount');
+});

@@ -20,9 +20,11 @@ class PriceListController extends Controller
     /**
      * Get the price list data.
      *
+     * @param Request $request The request object.
+     *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function data(Request $request)
+    public function data(Request $request): \Illuminate\Http\JsonResponse
     {
         $query      = PriceList::query();
         $total_data = $query->count();
@@ -63,5 +65,34 @@ class PriceListController extends Controller
             'recordsFiltered' => intval($total_filtered),
             'data' => $data
         ]);
+    }
+
+    /**
+     * Update the order amount.
+     *
+     * @param Request $request The request object.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateOrderAmount(Request $request): \Illuminate\Http\JsonResponse
+    {
+        if ($request->_token != csrf_token()) {
+            return response()->json(['success' => false, 'message' => 'Invalid token.']);
+        }
+
+        $id = $request->id;
+        $action = $request->action;
+
+        $priceList = PriceList::findOrFail($id);
+
+        if ($action == 'increment') {
+            $priceList->increment('order_amount');
+        } elseif ($action == 'decrement' && $priceList->order_amount > 0) {
+            $priceList->decrement('order_amount');
+        }
+
+        $priceList->save();
+
+        return response()->json(['success' => true, 'value' => $priceList->order_amount]);
     }
 }
