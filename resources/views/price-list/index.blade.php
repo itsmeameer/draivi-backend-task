@@ -106,7 +106,7 @@
 
         <div style="text-align: center; margin-bottom: 20px;">
             <button id="listTableButton" class="lg-button">List</button>
-            <button id="emptyTableButton" class="lg-button">Empty</button>
+            <button id="emptyTableButton" class="lg-button" disabled>Empty</button>
         </div>
 
         <table id="priceListTable" class="display" style="display: none;">
@@ -156,6 +156,7 @@
 
             $('#listTableButton').click(function() {
                 $(this).prop('disabled', true);
+                $('#emptyTableButton').prop('disabled', false);
                 
                 $('#priceListTable').show();
 
