@@ -83,16 +83,16 @@ class PriceListController extends Controller
         $id = $request->id;
         $action = $request->action;
 
-        $priceList = PriceList::findOrFail($id);
+        $price_list = PriceList::findOrFail($id);
 
         if ($action == 'increment') {
-            $priceList->increment('order_amount');
-        } elseif ($action == 'decrement' && $priceList->order_amount > 0) {
-            $priceList->decrement('order_amount');
+            $price_list->increment('order_amount');
+        } elseif ($action == 'decrement' && $price_list->order_amount > 0) {
+            $price_list->decrement('order_amount');
         }
 
-        $priceList->save();
+        $price_list->save();
 
-        return response()->json(['success' => true, 'value' => $priceList->order_amount]);
+        return response()->json(['success' => true, 'value' => $price_list->order_amount]);
     }
 }
