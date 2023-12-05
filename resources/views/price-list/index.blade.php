@@ -118,7 +118,7 @@
                     <th>Price</th>
                     <th>Price GBP</th>
                     <th>Order Amount</th>
-                    <th>Updated At</th>
+                    <th>Last Updated At</th>
                 </tr>
             </thead>
         </table>
