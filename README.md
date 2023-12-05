@@ -4,7 +4,7 @@ This is the backend task for Draivi build using Laravel and DataTables.
 ## Setup
 
  1. Make sure you have PHP and MySQL installed on your device
- 2. Download the repository
+ 2. Download the repository and run the command `composer install`
  3. Copy the `.env.example` to `.env`
  4. Set a `DB_DATABASE`, `DB_USERNAME` and `DB_PASSWORD`. Change other variables if needed. The example file already has some settings, they can be changed if needed.
  5. Set the API key for the Currency Layer API
