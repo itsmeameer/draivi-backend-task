@@ -6,9 +6,10 @@ This is the backend task for Draivi build using Laravel and DataTables.
  1. Make sure you have PHP and MySQL installed on your device
  2. Download the repository
  3. Copy the `.env.example` to `.env`
- 4. Set a `DB_DATABASE`, `DB_USERNAME` and `DB_PASSWORD`. Change other variables of needed. The example file already has some credentials (e.g price list API key). they can be changed if needed.
- 5. Run the command `php artisan key:generate` to generate an app key
- 6. Run the command `php artisan migrate` to setup the database.
+ 4. Set a `DB_DATABASE`, `DB_USERNAME` and `DB_PASSWORD`. Change other variables if needed. The example file already has some settings, they can be changed if needed.
+ 5. Set the API key for the Currency Layer API
+ 6. Run the command `php artisan key:generate` to generate an app key
+ 7. Run the command `php artisan migrate` to setup the database.
 
 ### Import File
 Run the command `php artisan price-list:import` to download and import the file.
